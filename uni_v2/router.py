@@ -4,16 +4,16 @@ from typing import Union, Tuple
 from eth_typing import ChecksumAddress
 from web3.types import Wei
 
-from base import BaseTrader
-from config import ABIS_V2_FILES
-from utils import auto_call
+from base.base import BaseContractManager
+from base.config import ABIS_V2_FILES
+from base.utils import auto_call, load_contract
 
 
-class RouterV2(BaseTrader):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.contract_address, self.abi = self.load_contract(
-            os.path.join(ABIS_V2_FILES, 'router.json'))
+class RouterV2(BaseContractManager):
+    contract_address, abi = load_contract(os.path.join(ABIS_V2_FILES, 'router.json'))
+
+    def __init__(self):
+        super().__init__()
         self.contract = self.w3.eth.contract(self.contract_address, abi=self.abi)
 
     @property
@@ -27,22 +27,21 @@ class RouterV2(BaseTrader):
         return self.contract.functions.factory()
 
     @auto_call
-    def add_liquidity(self, tk1: ChecksumAddress, tk2: ChecksumAddress,
-                      amount_tk1_desired, amount_tk2_desired, min_amount_tk1, min_amount_tk2):
+    def add_liquidity(self, tk1: ChecksumAddress, tk2: ChecksumAddress, amount_tk1_desired,
+                      amount_tk2_desired, min_amount_tk1, min_amount_tk2, address: ChecksumAddress):
         assert all(isinstance(i, int) for i in (
             amount_tk1_desired, amount_tk2_desired, min_amount_tk1, min_amount_tk2))
         return self.contract.functions.addLiquidity(
             tk1, tk2, amount_tk1_desired, amount_tk2_desired, min_amount_tk1, min_amount_tk2,
-            self.address, self.deadline
-        )
+            address, self.deadline)
 
     @auto_call
     def add_liquidity_eth(self, tk: ChecksumAddress, tk_amount_desired,
-                          min_amount_tk, min_amount_eth):
+                          min_amount_tk, min_amount_eth, address: ChecksumAddress):
         assert all(isinstance(i, int) for i in (
             min_amount_tk, min_amount_eth, tk_amount_desired))
         return self.contract.functions.addLiquidityETH(
-            tk, tk_amount_desired, min_amount_tk, min_amount_eth, self.address, self.deadline)
+            tk, tk_amount_desired, min_amount_tk, min_amount_eth, address, self.deadline)
 
     def get_route(self, tk1: ChecksumAddress, tk2: ChecksumAddress) -> Tuple[list, int]:
         if self.is_weth_address(tk1):
@@ -74,55 +73,58 @@ class RouterV2(BaseTrader):
 
     @auto_call
     def remove_liquidity(self, tk1: ChecksumAddress, tk2: ChecksumAddress,
-                         liquidity: int, min_amount_tk1: int, min_amount_tk2):
+                         liquidity: int, min_amount_tk1: int, min_amount_tk2, address: ChecksumAddress):
         return self.contract.functions.removeLiquidity(
-            tk1, tk2, liquidity, min_amount_tk1, min_amount_tk2, self.address, self.deadline)
+            tk1, tk2, liquidity, min_amount_tk1, min_amount_tk2, address, self.deadline)
 
     @auto_call
     def remove_liquidity_eth(self, tk: ChecksumAddress, liquidity: int,
-                             min_amount_tk: int, min_amount_eth: int):
+                             min_amount_tk: int, min_amount_eth: int, address: ChecksumAddress):
         return self.contract.functions.removeLiquidityETH(
-            tk, liquidity, min_amount_tk, min_amount_eth, self.address, self.deadline)
+            tk, liquidity, min_amount_tk, min_amount_eth, address, self.deadline)
 
-    def swap_eth_for_exact_tk(self, tk1: ChecksumAddress, tk2: ChecksumAddress, amount_out: int):
+    def swap_eth_for_exact_tk(self, tk1: ChecksumAddress, tk2: ChecksumAddress,
+                              amount_out: int, address: ChecksumAddress):
         return self.contract.functions.swapETHForExactTokens(
-            amount_out, self.get_route(tk1, tk2), self.address, self.deadline)
+            amount_out, self.get_route(tk1, tk2), address, self.deadline)
 
-    def swap_exact_eth_for_tk(self, tk1: ChecksumAddress, tk2: ChecksumAddress, min_amount_out: int):
+    def swap_exact_eth_for_tk(self, tk1: ChecksumAddress, tk2: ChecksumAddress,
+                              min_amount_out: int, address: ChecksumAddress):
         return self.contract.functions.swapExactETHForTokens(
-            min_amount_out, self.get_route(tk1, tk2), self.address, self.deadline)
+            min_amount_out, self.get_route(tk1, tk2), address, self.deadline)
 
-    def swap_exact_eth_for_tk_sft(self, tk1: ChecksumAddress, tk2: ChecksumAddress, min_amount_out: int):
+    def swap_exact_eth_for_tk_sft(self, tk1: ChecksumAddress, tk2: ChecksumAddress,
+                                  min_amount_out: int, address: ChecksumAddress):
         return self.contract.functions.swapExactETHForTokensSupportingFeeOnTransferTokens(
-            min_amount_out, self.get_route(tk1, tk2), self.address, self.deadline)
+            min_amount_out, self.get_route(tk1, tk2), address, self.deadline)
 
     def swap_exact_tk_for_eth(self, tk1: ChecksumAddress, tk2: ChecksumAddress,
-                              amount_in: int, min_amount_out: int):
+                              amount_in: int, min_amount_out: int, address: ChecksumAddress):
         return self.contract.functions.swapExactTokensForETH(
-            amount_in, min_amount_out, self.get_route(tk1, tk2), self.address, self.deadline)
+            amount_in, min_amount_out, self.get_route(tk1, tk2), address, self.deadline)
 
     def swap_exact_tk_for_eth_sft(self, tk1: ChecksumAddress, tk2: ChecksumAddress,
-                                  amount_in: int, min_amount_out: int):
+                                  amount_in: int, min_amount_out: int, address: ChecksumAddress):
         return self.contract.functions.swapExactTokensForETHSupportingFeeOnTransferTokens(
-            amount_in, min_amount_out, self.get_route(tk1, tk2), self.address, self.deadline)
+            amount_in, min_amount_out, self.get_route(tk1, tk2), address, self.deadline)
 
     def swap_exact_tk_for_tk(self, tk1: ChecksumAddress, tk2: ChecksumAddress,
-                             amount_in: int, min_amount_out: int):
+                             amount_in: int, min_amount_out: int, address: ChecksumAddress):
         return self.contract.functions.swapExactTokensForTokens(
-            amount_in, min_amount_out, self.get_route(tk1, tk2), self.address, self.deadline)
+            amount_in, min_amount_out, self.get_route(tk1, tk2), address, self.deadline)
 
     def swap_exact_tk_for_tk_sft(self, tk1: ChecksumAddress, tk2: ChecksumAddress,
-                                 amount_in: int, min_amount_out: int):
+                                 amount_in: int, min_amount_out: int, address: ChecksumAddress):
         return self.contract.functions.swapExactTokensForTokensSupportingFeeOnTransferTokens(
-            amount_in, min_amount_out, self.get_route(tk1, tk2), self.address, self.deadline)
+            amount_in, min_amount_out, self.get_route(tk1, tk2), address, self.deadline)
 
     def swap_tk_for_exact_eth(self, tk1: ChecksumAddress, tk2: ChecksumAddress,
-                              amount_out: int, max_amount_in: int):
+                              amount_out: int, max_amount_in: int, address: ChecksumAddress):
         return self.contract.functions.swapTokensForExactETH(
-            amount_out, max_amount_in, self.get_route(tk1, tk2), self.address, self.deadline)
+            amount_out, max_amount_in, self.get_route(tk1, tk2), address, self.deadline)
 
     def swap_tk_for_exact_tk(self, tk1: ChecksumAddress, tk2: ChecksumAddress,
-                             amount_out: int, max_amount_in: int):
+                             amount_out: int, max_amount_in: int, address: ChecksumAddress):
         return self.contract.functions.swapTokensForExactTokens(
-            amount_out, max_amount_in, self.get_route(tk1, tk2), self.address, self.deadline)
+            amount_out, max_amount_in, self.get_route(tk1, tk2), address, self.deadline)
 

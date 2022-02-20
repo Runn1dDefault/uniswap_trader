@@ -4,15 +4,15 @@ from typing import Union
 from eth_typing import ChecksumAddress
 from web3.types import Wei
 
-from config import ABIS_V3_FILES
-from base import BaseTrader
+from base.config import ABIS_V3_FILES
+from base.base import BaseContractManager
+from base.utils import load_contract
 
 
-class QuoterV3(BaseTrader):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.contract_address, self.abi = self.load_contract(
-            os.path.join(ABIS_V3_FILES, 'quoter.json'))
+class QuoterV3(BaseContractManager):
+    contract_address, abi = load_contract(os.path.join(ABIS_V3_FILES, 'quoter.json'))
+
+    def __init__(self):
         self.contract = self.w3.eth.contract(self.contract_address, abi=self.abi)
 
     _sqrtPriceLimitX96 = 0
@@ -56,3 +56,5 @@ class QuoterV3(BaseTrader):
     def uniswapV3SwapCallback(self, amount1_delta: int, amount2_delta: int, tk1, tk2, fee):
         return self.contract.functions.uniswapV3SwapCallback(
             amount1_delta, amount2_delta, self.encode_bytes(tk1, tk2, fee)).call()
+
+
