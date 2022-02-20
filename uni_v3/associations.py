@@ -26,7 +26,7 @@ class TraderV3(RouterV3, BaseTraderMixin):
         self.quoter = QuoterV3()
 
     @find_fee
-    def price_input(self, fee: int = None) -> tuple:
+    def price_output(self, fee: int = None) -> tuple:
         if self.quoter.is_weth_address(self.tk1) or self.quoter.is_weth_address(self.tk2):
             quote = self.quoter.quote_exact_input_single(self.tk1, self.tk2, fee, self.amount)
         else:
@@ -34,7 +34,7 @@ class TraderV3(RouterV3, BaseTraderMixin):
         return quote, fee
 
     @find_fee
-    def price_output(self, fee: int = None) -> tuple:
+    def price_input(self, fee: int = None) -> tuple:
         if self.quoter.is_weth_address(self.tk1) or self.quoter.is_weth_address(self.tk2):
             return self.quoter.quote_exact_output_single(
                 self.tk1, self.tk2, fee, self.amount), fee

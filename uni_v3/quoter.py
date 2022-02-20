@@ -6,7 +6,7 @@ from web3.types import Wei
 
 from base.config import ABIS_V3_FILES
 from base.base import BaseContractManager
-from base.utils import load_contract
+from base.utils import load_contract, auto_call
 
 
 class QuoterV3(BaseContractManager):
@@ -26,35 +26,38 @@ class QuoterV3(BaseContractManager):
         self._sqrtPriceLimitX96 = value
 
     @property
+    @auto_call
     def weth_address(self):
-        return self.contract.functions.WETH9().call()
+        return self.contract.functions.WETH9()
 
     @property
+    @auto_call
     def factory(self):
-        return self.contract.functions.factory().call()
+        return self.contract.functions.factory()
 
+    @auto_call
     def quote_exact_input(self, tk1: ChecksumAddress, tk2: ChecksumAddress, fee: int,
                           amount_in: Union[int, Wei]):
-        return self.contract.functions.quoteExactInput(
-            self.encode_bytes(tk1, tk2, fee), amount_in).call()
+        return self.contract.functions.quoteExactInput(self.encode_bytes(tk1, tk2, fee), amount_in)
 
+    @auto_call
     def quote_exact_input_single(self, tk1: ChecksumAddress, tk2: ChecksumAddress, fee: int,
                                  amount_in: Union[int, Wei]):
-        return self.contract.functions.quoteExactInputSingle(
-            tk1, tk2, fee, amount_in, self.sqrtPriceLimitX96).call()
+        return self.contract.functions.quoteExactInputSingle(tk1, tk2, fee, amount_in, self.sqrtPriceLimitX96)
 
+    @auto_call
     def quote_exact_output(self, tk1: ChecksumAddress, tk2: ChecksumAddress, fee: int,
                            amount_out: Union[int, Wei]):
-        return self.contract.functions.quoteExactOutput(
-            self.encode_bytes(tk1, tk2, fee), amount_out).call()
+        return self.contract.functions.quoteExactOutput(self.encode_bytes(tk1, tk2, fee), amount_out)
 
+    @auto_call
     def quote_exact_output_single(self, tk1: ChecksumAddress, tk2: ChecksumAddress, fee: int,
                                   amount_out: Union[int, Wei]):
-        return self.contract.functions.quoteExactOutputSingle(
-            tk1, tk2, fee, amount_out, self.sqrtPriceLimitX96).call()
+        return self.contract.functions.quoteExactOutputSingle(tk1, tk2, fee, amount_out, self.sqrtPriceLimitX96)
 
+    @auto_call
     def uniswapV3SwapCallback(self, amount1_delta: int, amount2_delta: int, tk1, tk2, fee):
         return self.contract.functions.uniswapV3SwapCallback(
-            amount1_delta, amount2_delta, self.encode_bytes(tk1, tk2, fee)).call()
+            amount1_delta, amount2_delta, self.encode_bytes(tk1, tk2, fee))
 
 

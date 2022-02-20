@@ -15,9 +15,7 @@ class FactoryV3(BaseContractManager):
         self.contract = self.w3.eth.contract(self.contract_address, abi=self.abi)
 
     def get_pool(self, tk1, tk2, fee: int) -> Union[tuple, None]:
-        pool = self.contract.functions.getPool(tk1, tk2, fee).call()
-        if not self.is_eth_address(pool):
-            return pool
+        return self.contract.functions.getPool(tk1, tk2, fee).call()
 
     def create_pool(self, tk1, tk2, fee: int) -> ChecksumAddress:
         return self.contract.functions.createPool(tk1, tk2, fee).call()

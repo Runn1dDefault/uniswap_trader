@@ -15,7 +15,7 @@ NETWORKS_IDS = {
 
 ROUTE_TYPES = ['address', 'uint24', 'address', 'uint24', 'address']
 
-# Ropsten Tokens
+# Ropsten Tokens for tests
 TESTKING = '0x588a4fAf0B068446caA3F54AbcC19F41426b1d1F'
 UNI = '0xC8F88977E21630Cf93c02D02d9E8812ff0DFC37a'
 UNIV3 = '0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984'

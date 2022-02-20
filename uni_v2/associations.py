@@ -9,7 +9,7 @@ class TraderV2(RouterV2, BaseTraderMixin):
         self._private_key = private_key
 
     def price_input(self):
-        return self.get_amounts_out(self.tk1, self.tk2, self.amount)[0]
+        return self.get_amounts_in(self.tk1, self.tk2, self.amount)[0]
 
     def price_output(self):
         return self.get_amounts_out(self.tk1, self.tk2, self.amount)[-1]
