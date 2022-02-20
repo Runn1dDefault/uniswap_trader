@@ -1,18 +1,3 @@
-NETWORKS_IDS = {
-    1: "mainnet",
-    3: "ropsten",
-    4: "rinkeby",
-    10: "optimism",
-    42: "kovan",
-    56: "binance",
-    97: "binance_testnet",
-    137: "polygon",
-    100: "xdai",
-    250: "fantom",
-    42161: "arbitrum",
-    421611: "arbitrum_testnet",
-}
-
 ROUTE_TYPES = ['address', 'uint24', 'address', 'uint24', 'address']
 
 # Ropsten Tokens for tests
