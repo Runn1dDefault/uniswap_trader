@@ -258,6 +258,8 @@ test.py
 
 /materials/nodes/
 ./materials/nodes/
+/materials/providers.txt
+./materials/providers.txt
 
 /.env
 ./.env
