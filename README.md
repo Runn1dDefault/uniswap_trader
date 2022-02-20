@@ -1,4 +1,4 @@
-# Run geth ligth node
+# Run geth light client node
 ```commandline
 $ docker-compose -f docker-compose-ipc.yml up -d
 ```
