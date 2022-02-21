@@ -3,7 +3,6 @@ from uni_v3.router import RouterV3
 from uni_v3.quoter import QuoterV3
 
 from .utils import find_fee
-from uniswap import Uniswap
 
 """
 ex: 
