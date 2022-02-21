@@ -19,11 +19,12 @@ ex:
 
 
 class TraderV3(RouterV3, BaseTraderMixin):
-    def __init__(self, address: str, private_key: str):
+    def __init__(self, address: str = None, private_key: str = None):
         super().__init__()
         self.address = address
         self._private_key = private_key
         self.quoter = QuoterV3()
+        self.is_input: bool = False
 
     @find_fee
     def price_input(self, fee: int = None) -> tuple:
@@ -41,6 +42,8 @@ class TraderV3(RouterV3, BaseTraderMixin):
         return self.quoter.quote_exact_output(self.tk1, self.tk2, fee, self.amount), fee
 
     def trade_input(self, slippage: float) -> str:
+        assert self.address is not None and self._private_key is not None
+
         if not self.is_eth_address(self.tk1):
             self.approve(self.tk1, self.contract_address)
         price, fee = self.price_input()
@@ -53,6 +56,8 @@ class TraderV3(RouterV3, BaseTraderMixin):
         return tx.hex()
 
     def trade_output(self, slippage: float) -> str:
+        assert self.address is not None and self._private_key is not None
+
         if not self.is_eth_address(self.tk1):
             self.approve(self.tk1, self.contract_address)
         price, fee = self.price_output()

@@ -3,7 +3,7 @@ from uni_v2.router import RouterV2
 
 
 class TraderV2(RouterV2, BaseTraderMixin):
-    def __init__(self, address: str, private_key: str):
+    def __init__(self, address: str = None, private_key: str = None):
         super().__init__()
         self.address = address
         self._private_key = private_key
@@ -15,6 +15,8 @@ class TraderV2(RouterV2, BaseTraderMixin):
         return self.get_amounts_out(self.tk1, self.tk2, self.amount)[-1]
 
     def trade_input(self, slippage: float) -> str:
+        assert self.address is not None and self._private_key is not None
+
         if not self.is_eth_address(self.tk1):
             self.approve(self.tk1, self.contract_address)
         min_amount_out = int((1 - slippage) * self.price_input())
@@ -29,6 +31,8 @@ class TraderV2(RouterV2, BaseTraderMixin):
         return tx.hex()
 
     def trade_output(self, slippage: float) -> str:
+        assert self.address is not None and self._private_key is not None
+
         if not self.is_eth_address(self.tk1):
             self.approve(self.tk1, self.contract_address)
         max_amount_in = int((1 + slippage) * self.price_output())
