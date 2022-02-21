@@ -44,7 +44,16 @@ class RouterV3(BaseContractManager):
                            amount_in: Union[int, Wei], fee: int, min_amount_out: Union[Wei, int],
                            address: Union[Address, ChecksumAddress, str]):
         return self.contract.functions.exactInputSingle(
-            tk1, tk2, fee, address, self.deadline, amount_in, min_amount_out, self.sqrtPriceLimitX96
+            {
+                "tokenIn": tk1,
+                "tokenOut": tk2,
+                "fee": fee,
+                "recipient": address,
+                "deadline": self.deadline,
+                "amountIn": amount_in,
+                "amountOutMinimum": min_amount_out,
+                "sqrtPriceLimitX96": self.sqrtPriceLimitX96,
+            }
         )
 
     def exact_output(self, tk1: ChecksumAddress, tk2: ChecksumAddress,
@@ -58,5 +67,14 @@ class RouterV3(BaseContractManager):
                             amount_out: Union[int, Wei], fee: int, max_amount_in: Union[Wei, int],
                             address: Union[Address, ChecksumAddress, str]):
         return self.contract.functions.exactOutputSingle().call(
-            tk1, tk2, fee, address, self.deadline, amount_out, max_amount_in, self.sqrtPriceLimitX96
+            {
+                "tokenIn": tk1,
+                "tokenOut": tk2,
+                "fee": fee,
+                "recipient": address,
+                "deadline": self.deadline,
+                "amountOut": amount_out,
+                "amountInMaximum": max_amount_in,
+                "sqrtPriceLimitX96": self.sqrtPriceLimitX96,
+            }
         )

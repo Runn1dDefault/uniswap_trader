@@ -50,7 +50,6 @@ class BaseContractManager:
         return False
 
     def check_contract_success(self, tx_hash: Union[_Hash32, str]):
-        print(f'Awaiting {tx_hash}...')
         tx_data = self.w3.eth.wait_for_transaction_receipt(tx_hash)
         if tx_data.status == 1:
             return True
@@ -69,7 +68,7 @@ class BaseContractManager:
         erc20_contract = self.w3.eth.contract(tk, abi=self.erc20_abi)
         return erc20_contract.functions.balanceOf(address).call()
 
-    def err_insufficient_balance(self, address: ChecksumAddress, qty: Union[Wei, int]):
-        eth_balance = self.get_balance(address)
-        if qty > eth_balance:
-            raise InsufficientBalance(eth_balance, qty)
+    def err_insufficient_balance(self, address: ChecksumAddress, qty: Union[Wei, int], tk: ChecksumAddress = None):
+        balance = self.get_balance(address, tk)
+        if qty > balance:
+            raise InsufficientBalance(balance, qty)

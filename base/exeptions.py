@@ -3,3 +3,23 @@ class InsufficientBalance(Exception):
 
     def __init__(self, had: int, needed: int) -> None:
         Exception.__init__(self, f"Insufficient balance. Had {had}, needed {needed}")
+
+
+class SlipPageError(Exception):
+    # STF
+    def __init__(self):
+        super().__init__('Slippage Error!')
+
+
+class PriceLimit(Exception):
+    # SPL
+    def __init__(self):
+        super().__init__('Square root price limit')
+
+
+class AmountError(Exception):
+    # IIA
+    def __init__(self):
+        super().__init__('Insufficient input amount,'
+                         ' an insufficient amount of input token was sent during the callback')
+

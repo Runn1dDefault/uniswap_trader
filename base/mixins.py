@@ -20,7 +20,6 @@ class BaseTraderMixin:
         self.tk1 = self.w3.toChecksumAddress(tk1)
         self.tk2 = self.w3.toChecksumAddress(tk2)
         self.amount = self.quantity(amount, tk_decimals)
-        self.err_insufficient_balance(self.address, self.amount)
 
     def build_tx_and_send(self, function: ContractFunction):
         params: TxParams = {"from": self.address, "value": Wei(0),
