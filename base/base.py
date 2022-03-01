@@ -17,7 +17,13 @@ from .utils import load_contract
 class BaseContractManager:
     CONVERT_MAP = {'1': 'wei', '3': 'kwei', '6': 'mwei', '9': 'gwei', '12': 'szabo', '15': 'finney',
                    '18': 'ether', '21': 'kether', '24': 'mether', '27': 'gether', '30': 'tether'}
-    w3 = Web3(Web3.IPCProvider(IPC_PATH))
+
+    def __init__(self, provider_http: str = None):
+        if provider_http:
+            self.w3 = Web3(Web3.HTTPProvider(provider_http))
+        else:
+            self.w3 = Web3(Web3.IPCProvider(IPC_PATH, timeout=7))
+
     max_approval_int = int(f"0x{64 * 'f'}", 16)
     max_approval_check_int = int(f"0x{15 * '0'}{49 * 'f'}", 16)
     _, erc20_abi = load_contract(os.path.join(BASE_ABIS, 'erc20.json'))
@@ -56,6 +62,22 @@ class BaseContractManager:
         return False
 
     @property
+    def is_synced(self):
+        # only for mainnet and ropsten
+        if self.w3.eth.syncing is False:
+            address = self.w3.toChecksumAddress('0x9bc74DD43970b43ea94760A24043bBe2089A670B')
+            if self.w3.net.chainId == 1:
+                tk = self.w3.toChecksumAddress('0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2')
+            else:
+                tk = self.w3.toChecksumAddress('0xc778417E063141139Fce010982780140Aa0cD5Ab')
+            try:
+                self.get_balance(address, tk)
+                return True
+            except:
+                pass
+        return False
+
+    @property
     def deadline(self) -> int:
         return int(time()) + 10 * 60
 
@@ -72,3 +94,7 @@ class BaseContractManager:
         balance = self.get_balance(address, tk)
         if qty > balance:
             raise InsufficientBalance(balance, qty)
+
+    def check_pool(self):
+        pass
+

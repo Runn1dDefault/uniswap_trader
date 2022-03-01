@@ -13,6 +13,7 @@ class BaseTraderMixin:
     tk1: Union[Address, ChecksumAddress, str]
     tk2: Union[Address, ChecksumAddress, str]
     amount: Union[int, Wei]
+    fee: int = None
 
     def init(self, tk1: Union[Address, ChecksumAddress, str],
              tk2: Union[Address, ChecksumAddress, str], amount: float, tk_decimals):
@@ -20,6 +21,8 @@ class BaseTraderMixin:
         self.tk1 = self.w3.toChecksumAddress(tk1)
         self.tk2 = self.w3.toChecksumAddress(tk2)
         self.amount = self.quantity(amount, tk_decimals)
+        self.fee = self.check_pool()
+        return self
 
     def build_tx_and_send(self, function: ContractFunction):
         params: TxParams = {"from": self.address, "value": Wei(0),

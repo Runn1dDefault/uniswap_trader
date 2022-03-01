@@ -12,7 +12,8 @@ from base.utils import load_contract
 class RouterV3(BaseContractManager):
     contract_address, abi = load_contract(os.path.join(ABIS_V3_FILES, 'router.json'))
 
-    def __init__(self):
+    def __init__(self, provider_http: str = None):
+        super().__init__(provider_http=provider_http)
         self.contract = self.w3.eth.contract(self.contract_address, abi=self.abi)
 
     _sqrtPriceLimitX96 = 0

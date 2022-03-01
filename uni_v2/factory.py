@@ -10,8 +10,8 @@ from base.utils import load_contract
 class FactoryV2(BaseContractManager):
     contract_address, abi = load_contract(os.path.join(ABIS_V2_FILES, 'factory.json'))
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, provider_http: str = None):
+        super().__init__(provider_http=provider_http)
         self.contract = self.w3.eth.contract(self.contract_address, abi=self.abi)
 
     def all_pairs(self, tk_id: int):

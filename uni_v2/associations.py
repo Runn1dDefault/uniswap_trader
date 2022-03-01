@@ -1,12 +1,22 @@
+from base.exeptions import NotFoundPool
 from base.mixins import BaseTraderMixin
+from uni_v2.factory import FactoryV2
 from uni_v2.router import RouterV2
 
 
 class TraderV2(RouterV2, BaseTraderMixin):
-    def __init__(self, address: str = None, private_key: str = None):
-        super().__init__()
+    def __init__(self, address: str = None, private_key: str = None, provider_http: str = None):
+        super().__init__(provider_http=provider_http)
         self.address = address
         self._private_key = private_key
+        self.factory_c = FactoryV2(provider_http=provider_http)
+
+    def check_pool(self) -> None:
+        if self.is_eth_address(self.get_pair()):
+            raise NotFoundPool('Not found pool in V3')
+
+    def get_pair(self):
+        return self.factory_c.get_pair(self.tk1, self.tk2)
 
     def price_input(self):
         return self.get_amounts_in(self.tk1, self.tk2, self.amount)[0]
@@ -27,7 +37,6 @@ class TraderV2(RouterV2, BaseTraderMixin):
         else:
             func = self.swap_exact_tk_for_tk(self.tk1, self.tk2, self.amount, min_amount_out, self.address)
         tx = self.build_tx_and_send(func)
-        self.check_contract_success(tx)
         return tx.hex()
 
     def trade_output(self, slippage: float) -> str:
@@ -43,5 +52,4 @@ class TraderV2(RouterV2, BaseTraderMixin):
         else:
             func = self.swap_tk_for_exact_tk(self.tk1, self.tk2, self.amount, max_amount_in, self.address)
         tx = self.build_tx_and_send(func)
-        self.check_contract_success(tx)
         return tx.hex()

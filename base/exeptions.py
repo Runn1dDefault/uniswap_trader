@@ -5,10 +5,12 @@ class InsufficientBalance(Exception):
         Exception.__init__(self, f"Insufficient balance. Had {had}, needed {needed}")
 
 
+class NotFoundPool(Exception):
+    pass
+
+
 class SlipPageError(Exception):
-    # STF
-    def __init__(self):
-        super().__init__('Slippage Error!')
+    pass
 
 
 class PriceLimit(Exception):

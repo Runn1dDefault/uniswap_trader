@@ -6,11 +6,6 @@ services:
     restart: unless-stopped
     env_file:
       - .env
-    ports:
-      - "30303:30303"
-      - "30303:30303/udp"
-      - "8545:8545"
-      - "8546:8546"
     volumes:
       - ./materials/nodes/${NETWORK}:/root/.ethereum/${NETWORK}
     command:

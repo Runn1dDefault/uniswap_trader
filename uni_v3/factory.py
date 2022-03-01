@@ -11,10 +11,11 @@ from base.utils import load_contract
 class FactoryV3(BaseContractManager):
     contract_address, abi = load_contract(os.path.join(ABIS_V3_FILES, 'factory.json'))
 
-    def __init__(self):
+    def __init__(self, provider_http: str = None):
+        super().__init__(provider_http=provider_http)
         self.contract = self.w3.eth.contract(self.contract_address, abi=self.abi)
 
-    def get_pool(self, tk1, tk2, fee: int) -> Union[tuple, None]:
+    def get_pool(self, tk1, tk2, fee: int) -> ChecksumAddress:
         return self.contract.functions.getPool(tk1, tk2, fee).call()
 
     def create_pool(self, tk1, tk2, fee: int) -> ChecksumAddress:
